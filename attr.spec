@@ -4,9 +4,10 @@
 #
 # Source0 file verified with key 0xD5BF9FEB0313653A (agruen@gnu.org)
 #
+%define keepstatic 1
 Name     : attr
 Version  : 2.5.1
-Release  : 45
+Release  : 46
 URL      : https://download-mirror.savannah.gnu.org/releases/attr/attr-2.5.1.tar.gz
 Source0  : https://download-mirror.savannah.gnu.org/releases/attr/attr-2.5.1.tar.gz
 Source1  : https://download-mirror.savannah.gnu.org/releases/attr/attr-2.5.1.tar.gz.sig
@@ -112,6 +113,24 @@ Group: Default
 man components for the attr package.
 
 
+%package staticdev
+Summary: staticdev components for the attr package.
+Group: Default
+Requires: attr-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the attr package.
+
+
+%package staticdev32
+Summary: staticdev32 components for the attr package.
+Group: Default
+Requires: attr-dev = %{version}-%{release}
+
+%description staticdev32
+staticdev32 components for the attr package.
+
+
 %prep
 %setup -q -n attr-2.5.1
 cd %{_builddir}/attr-2.5.1
@@ -125,30 +144,30 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1615912668
+export SOURCE_DATE_EPOCH=1659646831
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
 export FCFLAGS="$FFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
 export FFLAGS="$FFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
 export CXXFLAGS="$CXXFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
-%configure --disable-static INSTALL_USER=root \
+%configure  INSTALL_USER=root \
 INSTALL_GROUP=root \
 --enable-nls \
 --enable-shared \
---disable-static
+--enable-static
 make  %{?_smp_mflags}
 
 pushd ../build32/
-export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+export PKG_CONFIG_PATH="/usr/lib32/pkgconfig:/usr/share/pkgconfig"
 export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
 export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
 export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
 export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
-%configure --disable-static INSTALL_USER=root \
+%configure  INSTALL_USER=root \
 INSTALL_GROUP=root \
 --enable-nls \
 --enable-shared \
---disable-static   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+--enable-static   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
 %check
@@ -161,11 +180,11 @@ cd ../build32;
 make VERBOSE=1 check || :
 
 %install
-export SOURCE_DATE_EPOCH=1615912668
+export SOURCE_DATE_EPOCH=1659646831
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/attr
-cp %{_builddir}/attr-2.5.1/doc/COPYING %{buildroot}/usr/share/package-licenses/attr/cade8ab653f461106e2e3ed6fa442c761ee18d9e
-cp %{_builddir}/attr-2.5.1/doc/COPYING.LGPL %{buildroot}/usr/share/package-licenses/attr/1a8a11da70cc41755e50a4aa88f605c4ec1b2f6d
+cp %{_builddir}/attr-%{version}/doc/COPYING %{buildroot}/usr/share/package-licenses/attr/cade8ab653f461106e2e3ed6fa442c761ee18d9e
+cp %{_builddir}/attr-%{version}/doc/COPYING.LGPL %{buildroot}/usr/share/package-licenses/attr/1a8a11da70cc41755e50a4aa88f605c4ec1b2f6d
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -174,11 +193,17 @@ pushd %{buildroot}/usr/lib32/pkgconfig
 for i in *.pc ; do ln -s $i 32$i ; done
 popd
 fi
+if [ -d %{buildroot}/usr/share/pkgconfig ]
+then
+pushd %{buildroot}/usr/share/pkgconfig
+for i in *.pc ; do ln -s $i 32$i ; done
+popd
+fi
 popd
 %make_install
 %find_lang attr
 ## Remove excluded files
-rm -f %{buildroot}/usr/share/man/man5/attr.5
+rm -f %{buildroot}*/usr/share/man/man5/attr.5
 
 %files
 %defattr(-,root,root,-)
@@ -237,6 +262,14 @@ rm -f %{buildroot}/usr/share/man/man5/attr.5
 /usr/share/man/man1/attr.1
 /usr/share/man/man1/getfattr.1
 /usr/share/man/man1/setfattr.1
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib64/libattr.a
+
+%files staticdev32
+%defattr(-,root,root,-)
+/usr/lib32/libattr.a
 
 %files locales -f attr.lang
 %defattr(-,root,root,-)

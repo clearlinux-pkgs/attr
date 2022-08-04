@@ -2,4 +2,4 @@ INSTALL_USER=root
 INSTALL_GROUP=root
 --enable-nls
 --enable-shared
---disable-static
+--enable-static

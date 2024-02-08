@@ -1,7 +1,7 @@
-Configure miss: /usr/bin/gcc-14 option to enable C11 features
+Configure miss: gcc-14 option to enable C11 features
 Configure miss: i686-generic-linux-gnu-file
-Configure miss: if /usr/bin/gcc-14 static flag -static works
-Configure miss: if /usr/bin/gcc-14 supports -fno-rtti -fno-exceptions
+Configure miss: if gcc-14 static flag -static works
+Configure miss: if gcc-14 supports -fno-rtti -fno-exceptions
 Configure miss: x86_64-clr-linux-gnu-dlltool
 Configure miss: x86_64-clr-linux-gnu-file
 Configure miss: x86_64-clr-linux-gnu-mt
